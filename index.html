@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Taiwan Family Trip</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-first app, 5 bottom tabs, one column up to 720px.
+   Colour: cool paper ground, deep teal ink; Kaohsiung amber, Taipei blue, travel violet. */
+:root{
+  --bg:#F1F5F4; --surface:#FFFFFF; --ink:#15302E; --muted:#58706D; --line:#D6E2DF;
+  --accent:#0E7C7B; --accent-ink:#FFFFFF;
+  --khh:#9A5B00; --khh-bg:#FBEBD2; --tpe:#245A9E; --tpe-bg:#DCE8F8; --trv:#5B3FA3; --trv-bg:#E8E0F6;
+  --good:#2E7D4F; --good-bg:#DDF0E4; --warn:#8A5200; --warn-bg:#FFEBC2; --bad:#B3261E; --bad-bg:#FBDDD9;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0E1B1A; --surface:#162624; --ink:#E4EFED; --muted:#93AAA6; --line:#2A403D;
+  --accent:#4FC1BE; --accent-ink:#06211F;
+  --khh:#F0B35B; --khh-bg:#3A2A10; --tpe:#8DB4F0; --tpe-bg:#162A47; --trv:#B9A2F0; --trv-bg:#2A2047;
+  --good:#6FCB93; --good-bg:#12301F; --warn:#F2C262; --warn-bg:#3A2D0B; --bad:#F2928B; --bad-bg:#3E1714; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);
+  padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:100px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:28px;font-weight:700}
+h2{font-size:19px;font-weight:700}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+header.top{display:flex;flex-direction:column;gap:6px}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.sync.live i{background:var(--good)}
+.sync.off i{background:var(--bad)}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:13px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.section{display:flex;flex-direction:column;gap:10px;min-width:0}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+/* countdown */
+.count{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.count b{font-family:var(--display);font-size:56px;line-height:1;font-weight:700;color:var(--accent)}
+.route{display:flex;height:34px;border-radius:9px;overflow:hidden;font-size:12px;font-weight:600}
+.route div{display:flex;align-items:center;justify-content:center;padding:0 6px;white-space:nowrap;overflow:hidden}
+.route .khh{flex:3;background:var(--khh-bg);color:var(--khh)}
+.route .trv{flex:2;background:var(--trv-bg);color:var(--trv)}
+.route .tpe{flex:4;background:var(--tpe-bg);color:var(--tpe)}
+.route .fly{flex:1.4;background:var(--good-bg);color:var(--good)}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);border-radius:6px}
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--line);color:var(--muted)}
+.chip.bad{background:var(--bad-bg);color:var(--bad)}
+.chip.warn{background:var(--warn-bg);color:var(--warn)}
+.chip.good{background:var(--good-bg);color:var(--good)}
+.chip.khh{background:var(--khh-bg);color:var(--khh)}
+.chip.tpe{background:var(--tpe-bg);color:var(--tpe)}
+.chip.trv,.chip.fly{background:var(--trv-bg);color:var(--trv)}
+/* buttons and fields */
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.btn.tiny{padding:3px 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.seg{display:flex;background:var(--line);border-radius:11px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;padding:8px 6px;border-radius:9px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;min-width:0}
+textarea{resize:vertical;min-height:64px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:600;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+/* day cards */
+.daycard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.daycard header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.part{display:grid;grid-template-columns:84px 1fr;gap:8px;font-size:14px}
+.part b{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.dayhead{width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.dayhead .d{font-family:var(--display);font-weight:700;font-size:22px;min-width:44px;text-align:center;line-height:1}
+.dayhead .d small{display:block;font-family:var(--body);font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase}
+.dayhead .t{flex:1;min-width:0}
+.dayhead .t b{display:block}
+.dayhead .t span{font-size:13px;color:var(--muted)}
+.kh{border-left:5px solid var(--khh)} .tp{border-left:5px solid var(--tpe)} .tv{border-left:5px solid var(--trv)}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .w{font-size:11px;font-weight:700;text-align:center;color:var(--muted);text-transform:uppercase;padding:2px 0}
+.cal button{aspect-ratio:1/1.1;border:1px solid transparent;background:var(--surface);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:0;min-width:0}
+.cal button b{font-family:var(--display);font-size:16px}
+.cal button small{font-size:9px;font-weight:700;letter-spacing:.04em}
+.cal .out{opacity:.35;background:transparent;cursor:default}
+.cal .khh{background:var(--khh-bg);color:var(--khh)} .cal .tpe{background:var(--tpe-bg);color:var(--tpe)} .cal .trv{background:var(--trv-bg);color:var(--trv)}
+.cal .today{border-color:var(--ink)}
+.cal .sel{outline:2px solid var(--accent);outline-offset:1px}
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+/* todo */
+.item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .tick{background:none;border:0;padding:0;cursor:pointer;flex:none;line-height:0;margin-top:1px}
+.item .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.item.done .tx{color:var(--muted);text-decoration:line-through}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+/* tables */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:440px}
+th{text-align:left;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:6px 8px 6px 0;border-bottom:1px solid var(--line)}
+td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+tr.total td{font-weight:700;border-bottom:0}
+.opt{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.opt .v{font-weight:700}
+.opt .v.yes{color:var(--good)} .opt .v.no{color:var(--bad)}
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);z-index:5;
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+nav.tabs div{max-width:720px;margin:0 auto;display:flex}
+nav.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 0;border-radius:10px}
+nav.tabs a[aria-current="page"]{color:var(--accent)}
+nav.tabs svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:13px;z-index:9;max-width:90%}
+@media (prefers-reduced-motion:no-preference){.bar span{transition:width .3s}}
+@media (max-width:420px){.part{grid-template-columns:1fr;gap:0}.count b{font-size:48px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<nav class="tabs" id="nav" aria-label="Sections" hidden><div>
+  <a href="#home" data-v="home"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>Home</a>
+  <a href="#calendar" data-v="calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Calendar</a>
+  <a href="#schedule" data-v="schedule"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Days</a>
+  <a href="#todo" data-v="todo"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l3 3 5-6"/></svg>To-do</a>
+  <a href="#rides" data-v="rides"><svg viewBox="0 0 24 24"><path d="M5 16V11l2-5h10l2 5v5M3 16h18M7 19v-3M17 19v-3"/><circle cx="8" cy="13" r=".6"/><circle cx="16" cy="13" r=".6"/></svg>Rides</a>
+</div></nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- 1. CONNECT TO YOUR GOOGLE SHEET: paste the Web app address between the quotes ---------- */
+const API_URL="https://script.google.com/macros/s/AKfycbzs1OjlNU9R3jppr9rds1w2qgMq1n8D9jUFT9eJG3hjXoMNad2rzLvrnjIeaKqLR9W8/exec";
+
+/* ---------- trip data (itinerary v2, updated 23 Nov 2026) ---------- */
+const START=new Date(2026,11,13), MS=864e5;
+const addDays=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
+const dayDiff=(a,b)=>Math.round((a-b)/MS);
+const fmt=(d,o)=>d.toLocaleDateString('en-GB',o);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>Math.round(n).toLocaleString('en-US');
+
+/* c = place, h = title, m/a/e = morning/afternoon/evening, t = transport, s = stay, x = halal and prayer notes */
+const DAYS=[
+{c:"Taoyuan → Kaohsiung",h:"Land 05:35, HSR south at 10:34",m:"Land at Taoyuan 05:35. Immigration, luggage, SIM or eSIM. Airport MRT (about 20 min) or a van to Taoyuan HSR station. Breakfast and prayer there while you wait.",a:"HSR Taoyuan to Zuoying at 10:34 (about 2 hrs; check the timetable). Taxis or vans to Howard Plaza Hotel. Check in, or leave bags and rest.",e:"Early halal dinner near the hotel. Early night.",t:"Airport MRT or van, HSR (14 seats reserved together), taxis or vans to the hotel",s:"Howard Plaza Hotel, Kaohsiung",x:"Long arrival day: pack snacks and halal instant food. Plan jamak per your musafir schedule. Ask the hotel for early check-in or luggage hold."},
+{c:"Kaohsiung",h:"Cijin Island",m:"Ferry to Cijin Island (short crossing; check the ferry timetable). Seaside walk.",a:"Bikes or e-trikes, lighthouse and beach. Halal food on the island is limited, so eat a halal lunch on the mainland or bring a packed lunch.",e:"Back to the hotel to rest. Early halal dinner.",t:"MRT or taxis to the ferry, ferry, bikes or e-trikes",s:"Howard Plaza Hotel, Kaohsiung",x:"Check halal options before taking the ferry. Schedule Zuhr and Asr breaks at the hotel or a quiet spot."},
+{c:"Kaohsiung",h:"Mosque and Suzuka Circuit Park",m:"Kaohsiung Mosque (open 09:00–20:30), Zuhr, then halal lunch next to the mosque.",a:"MRT or taxi to Caoya (Red line). Suzuka Circuit Park and SKM Park Outlets. Go-karts for those 155 cm and taller (under-18s need a parent consent form), rides for the kids, and the Ferris wheel, tram and carousel for the parents.",e:"Dome of Light at Formosa Boulevard station, then halal dinner near Kaohsiung Main Station.",t:"MRT (Orange and Red lines) or taxis; 2 vans if tired",s:"Howard Plaza Hotel, Kaohsiung",x:"Halal food inside SKM Park and a prayer room at the park are not confirmed: ask guest services on arrival. Pray at the mosque before leaving."},
+{c:"Kaohsiung → Alishan",h:"Paid tour day 1: to Alishan",m:"Check out of Howard Plaza and count luggage. Tour pickup (confirm the time and meeting point with the operator).",a:"The tour drives from Kaohsiung up to Alishan. Stops and meals depend on the tour.",e:"Overnight on or near the mountain, or in Chiayi. Check what the tour includes.",t:"Paid tour (confirm a vehicle that fits 14)",s:"Alishan or Chiayi (check the tour)",x:"Confirm halal meals with the operator. Ask the guide for Zuhr and Asr breaks. Alishan is cold and often foggy in December, so bring layers."},
+{c:"Alishan → Taichung",h:"Paid tour day 2: Alishan, then Taichung",m:"Alishan morning (sunrise or forest walk, depending on the tour).",a:"The tour continues down to Taichung.",e:"Check in to the Taichung hotel. Halal dinner.",t:"Paid tour",s:"Taichung hotel (check the tour)",x:"Check the Alishan Forest Railway status for these dates. Shortlist a halal dinner in Taichung ahead of time."},
+{c:"Taichung → Taipei",h:"Paid tour day 3: Taichung to Taipei",m:"Check out and count luggage. Tour pickup (confirm the time).",a:"The tour travels north to Taipei. Confirm the stops and halal lunch.",e:"Drop-off at Boutech. Check in, halal dinner nearby.",t:"Paid tour",s:"Boutech, Taipei",x:"It is Friday: ask the guide whether a prayer stop is possible, or follow your travel (musafir) plan."},
+{c:"Taipei",h:"National Palace Museum + Shilin",m:"National Palace Museum (kids' trail, rest spots for the elderly).",a:"Halal lunch and a rest.",e:"Shilin Night Market. Keep a headcount.",t:"2 vans, full day",s:"Boutech, Taipei",x:"Headcount at the Shilin entrance and exit. Check which stalls are halal."},
+{c:"Taipei (Yehliu and Keelung)",h:"Yehliu Geopark + Keelung",m:"Van to Yehliu Geopark (confirm the drive time). Rock formations: the ground is uneven, so go slowly with the elders and children.",a:"Keelung harbour and city. Plan halal lunch before you leave Taipei, because Keelung food options are mostly not halal.",e:"Back in Taipei. Halal dinner near the hotel.",t:"2 vans, full day",s:"Boutech, Taipei",x:"Confirm a halal lunch plan or pack a picnic. Keelung Miaokou night market is mostly not halal. Plan a prayer break."},
+{c:"Taipei",h:"Pokémon Center & Taipei 101",m:"Late breakfast, then MRT to Taipei City Hall (Exit 3). Pokémon Center Taipei (Shin Kong Mitsukoshi Xinyi Place A11, 3F) opens at 11:00; aim to arrive at opening on this weekday.",a:"Lunch in Xinyi, then Taipei 101 (mall and observatory). Rest as needed.",e:"Halal dinner. See the Taipei 101 lights, then MRT back.",t:"MRT (Bannan Line) or taxis",s:"Boutech, Taipei",x:"Check the Pokémon Center ticket and queue rules on the day. Plan prayers at the hotel before leaving or at the mall."},
+{c:"Taipei",h:"Souvenirs & departure",m:"Dihua Street or Ximending souvenirs. Late check-out, or store luggage with Boutech.",a:"Early dinner. Final pack. Hotel pickup about 19:30.",e:"Vans to Taoyuan. Be at the airport by about 21:00 for the 00:15 flight.",t:"2 vans (consider a 3rd for luggage)",s:"Check out, depart for the airport",x:"Final prayers before leaving the hotel. Keep passports and boarding passes in hand."},
+{c:"Flight home",h:"Flight out 00:15",m:"00:15 flight leaves Taoyuan for Singapore (the night of 22 Dec).",a:"",e:"",t:"",s:"",x:""}
+];
+const cityKey=c=>c.includes("→")?"trv":c.includes("Kaohsiung")?"khh":c.includes("Taipei")?"tpe":"trv";
+const tag={khh:"KHH",tpe:"TPE",trv:"TRAVEL"};
+const dkey=d=>d.k||cityKey(d.c);
+const DY=i=>Object.assign({},DAYS[i],(S.plan||{})["d"+i]||{});
+const STATUSES=["Planned","Booked","Done","Skipped"];
+
+const TASKS=[
+["p1","Check every passport is valid at least 6 months beyond 23 Dec 2026","Documents",75,"Renew now if not. Confirm entry rules for each passport holder."],
+["p2","Confirm flights and baggage allowance for everyone","Bookings",60,"Land 05:35 on 13 Dec. Return flight leaves 00:15 on 23 Dec (night of 22 Dec)."],
+["p3","Book hotel rooms: Howard Plaza, Kaohsiung 13–16 Dec (3 nights)","Bookings",60,"Ask for early check-in or a luggage hold on 13 Dec, and luggage storage while on tour."],
+["p4","Book hotel rooms: Boutech, Taipei 18–22 Dec (4 nights)","Bookings",60,"Ask for late check-out and luggage storage on 22 Dec for the 00:15 flight."],
+["p5","Buy travel insurance for all travellers","Documents",45,"Include medical cover; check age limits for elderly."],
+["p6","Book the paid tour for 16–18 Dec (Kaohsiung, Alishan, Taichung, Taipei)","Bookings",60,"3 days, 2 nights. Vehicle for 14, halal meals, prayer breaks, pickup at Howard Plaza, drop-off at Boutech. Ask if the two hotel nights are included."],
+["p7","Book 2 vans for 19 Dec, 20 Dec and the airport transfers","Bookings",40,"Ask for child seats, driver language, luggage space, overtime rules."],
+["p8","Get 2 quotes for vans and the tour and compare with the estimate","Bookings",45,"December is peak season."],
+["p9","Book Taipei 101 observatory and any timed tickets","Bookings",30,"Check opening hours and closure days."],
+["p10","Reserve HSR seats together: 13 Dec, Taoyuan to Zuoying at 10:34","Bookings",28,"Check when booking opens (about 4 weeks before). Under-6s ride free without a seat."],
+["p11","Shortlist halal restaurants near each hotel and each day's stops","Planning",21,"Save to Google Maps with a list per city, including Taichung and Keelung."],
+["p12","Prepare the daily prayer plan and prayer-friendly stops","Planning",21,"Pack prayer mats; ask the tour guide for prayer breaks on 16–18 Dec."],
+["p13","Get eSIMs or pocket wifi for the group","Tech",14,"At least 1 per family unit; test before leaving."],
+["p14","Buy Taiwan power adaptors (110V, Type A/B plugs)","Tech",14,"Check device voltage ranges before plugging in."],
+["p15","Pack for different weather: Kaohsiung mild, Alishan cold, Taipei cool and often rainy","Packing",10,"Layers, warm jackets for Alishan, umbrellas or ponchos."],
+["p16","Pack medicines for elderly and children; keep prescriptions handy","Health",10,"Carry in hand luggage."],
+["p17","Arrange wheelchair or assistance at the airport if needed","Health",14,"Request through the airline."],
+["p18","Bring a travel stroller and snacks for the 2-year-old","Packing",7,"A foldable stroller helps in stations and markets."],
+["p19","Pack halal instant food and snacks for long travel days","Packing",7,"Arrival day, tour days and departure day especially."],
+["p20","Change some Singapore dollars to NT$; check card use abroad","Money",10,"Keep cash for markets; many stalls are cash only."],
+["p21","Share the final itinerary and set buddy pairs for children","Planning",7,"Include emergency contacts and hotel addresses in Chinese."],
+["p22","Check the Taiwan arrival card or entry requirements","Documents",3,"Look up current rules before travel."],
+["p23","Make copies of passports and insurance (photo and paper)","Documents",3,"Store in a shared folder."],
+["p24","Online check-in for the flight; prepare baggage tags","Bookings",1,"Flight leaves 00:15 on 23 Dec; check-in opens early."],
+["p25","Confirm tour details: pickup, drop-off, hotel nights, halal meals, Alishan Forest Railway status","Bookings",21,"Phone or message the operator and write the answers into Key bookings on Home."],
+["p26","Buy Suzuka Circuit Park tickets; check go-kart rules and consent forms","Bookings",21,"Karts need 155 cm or taller, long pants and closed shoes. Under-18s need a signed parent consent form. Klook and KKday sell tickets."],
+["p27","Check the Cijin ferry timetable and plan a halal lunch","Planning",14,"Halal food on Cijin is limited; eat on the mainland or bring a packed lunch."],
+["p28","Check Pokémon Center Taipei hours and queue rules; plan to arrive at 11:00 on Mon 21 Dec","Planning",14,"Open Mon–Thu 11:00–21:30. Weekdays are usually easier than weekends."]
+].map(a=>({id:a[0],t:a[1],cat:a[2],before:a[3],note:a[4]}));
+const PSTAT=["Not started","In progress","Done"];
+
+const ROUT=[["Headcount at every transfer (van, tour, HSR, MRT, market exits)","All day"],["Water, tissues and snacks for children and elderly","Morning"],["Check weather; confirm next-day pickup time with the driver or guide","Evening"],["Prayer breaks planned at suitable stops","All day"],["Charge phones and power banks","Evening"]];
+const SPEC={
+0:[["Immigration; collect all luggage; count bags","Arrival"],["Be at the HSR platform for the 10:34 train, all 14 seats together","Morning"],["Check in at Howard Plaza and confirm breakfast time","Evening"]],
+1:[["Check the Cijin ferry timetable and confirm lunch plan","Morning"]],
+2:[["Confirm Suzuka Circuit Park is open; bring go-kart consent forms for under-18s","Morning"],["Confirm Kaohsiung Mosque prayer time","Morning"]],
+3:[["Check out of Howard Plaza, count luggage, meet the tour at the pickup point","Morning"],["Confirm halal lunch and dinner stops with the guide","Morning"]],
+4:[["Count luggage into the vehicle; confirm the halal dinner plan in Taichung","Morning"]],
+5:[["Check out, count luggage; confirm drop-off at Boutech","Morning"],["Confirm Boutech check-in and rooms","Evening"]],
+6:[["Confirm Palace Museum opening hours and van pickup time","Morning"]],
+7:[["Confirm halal lunch plan for Yehliu and Keelung; check weather and wind","Morning"]],
+8:[["Reach Pokémon Center by 11:00; check queue ticket rules","Morning"],["Confirm Taipei 101 time slot and tickets","Morning"],["Start final packing and souvenir count","Evening"]],
+9:[["Late check-out and luggage storage confirmed with Boutech","Morning"],["Passports, boarding passes, bags counted; vans at 19:30","Evening"],["Final headcount at airport check-in","Night"]]
+};
+const DURING=[];
+for(let o=0;o<10;o++){const items=ROUT.slice(0,3).concat(SPEC[o]||[],o<9?ROUT.slice(3,5):[]);items.forEach((it,k)=>DURING.push({id:o+"-"+k,day:o,t:it[0],w:it[1]}))}
+
+/* vans: [day index, purpose, type]. The 16-18 Dec tour is a separate paid booking (see settings). */
+const VANS=[[0,"Airport to Taoyuan HSR with luggage","Transfer"],[0,"Zuoying HSR to Howard Plaza Hotel","Transfer"],[6,"National Palace Museum and Shilin","Full day"],[7,"Yehliu Geopark and Keelung","Full day"],[9,"Hotel to Taoyuan airport","Transfer"]];
+const DEF={elderly:2,adults:4,teens:3,kids:3,toddlers:2,perVan:7,fullDay:6500,transfer:1800,fx:24,hsrFare:1490,tour:0};
+const BOOKS=[["out","Outbound flight (13 Dec)","e.g. flight no. · ref · lands 05:35"],["back","Return flight (23 Dec 00:15)","e.g. flight no. · ref"],["khh","Howard Plaza Hotel, Kaohsiung (13–16 Dec)","e.g. rooms · ref"],["tour","Paid tour (16–18 Dec)","e.g. company · phone · deposit paid · hotel nights included?"],["tpe","Boutech, Taipei (18–22 Dec)","e.g. rooms · ref"],["van","Van company (19 Dec, 20 Dec, airport)","e.g. company · phone · deposit paid"],["hsr","HSR booking ref (13 Dec 10:34)","e.g. ref · car and seats"]];
+
+/* ---------- 2. shared storage through your Google Sheet (Apps Script) ---------- */
+const API_OK=/^https:\/\/script\.google\.com\//.test(API_URL);
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}return null};
+let pass=LS("tt_pass")||"",myName=LS("tt_name")||"";
+const joined=()=>API_OK&&!!pass&&!!myName;
+
+async function api(body){
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({pass:pass},body))});
+  const j=await r.json();
+  if(!j||!j.ok){const e=new Error((j&&j.error)||"error");e.code=(j&&j.error)||"error";throw e}
+  return j;
+}
+function makeDb(){
+  const listeners={};let seq=0,inflight=0,last=null;
+  return{
+    collection:c=>({onSnapshot:cb=>{listeners[c]=cb}}),
+    doc:path=>({set:data=>{
+      const p=path.split("/");seq++;inflight++;
+      return api({action:"set",coll:p[0],id:p[1],data:data,by:myName}).finally(()=>{inflight--;seq++})
+    }}),
+    async poll(){
+      if(inflight)return;
+      const s=seq,j=await api({action:"all"});
+      if(s!==seq||inflight)return;
+      const txt=JSON.stringify(j.data||{});
+      if(txt===last){onSame();return}
+      last=txt;
+      for(const c in listeners){
+        const m=(j.data||{})[c]||{};
+        listeners[c]({docs:Object.keys(m).map(id=>({id:id,data:()=>m[id]}))});
+      }
+    }
+  };
+}
+
+/* ---------- state ---------- */
+const S={pretrip:{},during:{},days:{},bookings:{},settings:{},plan:{},ideas:{}};
+const names={};
+let db=null,user=null,uid=null,canWrite=true,sync="connecting",view="home",homeDay=null,selDay=null,pFilter="all",tMode="before",open=new Set(),loadedOnce=false,started=false;
+const app=document.getElementById("app");
+const cfg=()=>Object.assign({},DEF,S.settings.main||{});
+const queues=new Map();
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>{t.hidden=true},3500)}
+function save(coll,id,data){
+  S[coll][id]=data;scheduleRender();
+  if(!db)return;
+  const path=coll+"/"+id,prev=queues.get(path)||Promise.resolve();
+  queues.set(path,prev.then(()=>db.doc(path).set(data)).catch(e=>{
+    toast(e&&e.code==="bad_passcode"?"The passcode is no longer accepted. Sign out and join again.":"Could not save. Check your connection and try again.")
+  }));
+}
+let raf=0,pending=false;
+function scheduleRender(){
+  if(editing!=null)return;
+  const a=document.activeElement;
+  if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&app.contains(a)){pending=true;return}
+  cancelAnimationFrame(raf);raf=requestAnimationFrame(render);
+}
+document.addEventListener("focusout",()=>{if(pending){pending=false;setTimeout(scheduleRender,60)}});
+
+async function resolveNames(){
+  if(!user)return;
+  const ids=new Set();
+  for(const c of ["pretrip","during","days","ideas"])for(const k in S[c]){const b=S[c][k]&&S[c][k].by;if(b&&!(b in names))ids.add(b)}
+  if(!ids.size)return;
+  try{const ps=await user.profiles([...ids]);for(const id of ids)names[id]=(ps[id]&&ps[id].name)||"";scheduleRender()}catch(e){}
+}
+function onData(){loadedOnce=true;sync="live";clearTimeout(onData.t);resolveNames();scheduleRender()}
+function onSame(){if(sync!=="live"){loadedOnce=true;sync="live";clearTimeout(onData.t);scheduleRender()}}
+function signOut(){LS("tt_pass",null);LS("tt_name",null);location.reload()}
+async function poll(){
+  if(!db||document.hidden)return;
+  try{await db.poll()}
+  catch(e){
+    if(e&&e.code==="bad_passcode"){LS("tt_pass",null);pass="";location.reload();return}
+    if(sync!=="off"){sync="off";scheduleRender()}
+  }
+}
+function start(){
+  if(started)return;started=true;
+  uid=myName;
+  user={profiles:async ids=>{const o={};ids.forEach(i=>{o[i]={name:i}});return o}};
+  db=makeDb();
+  onData.t=setTimeout(()=>{if(!loadedOnce){sync="off";scheduleRender()}},12000);
+  Object.keys(S).forEach(c=>db.collection(c).onSnapshot(snap=>{const m={};snap.docs.forEach(d=>{m[d.id]=d.data()});S[c]=m;onData()}));
+  poll();setInterval(poll,8000);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)poll()});
+}
+async function doJoin(){
+  const n=((document.getElementById("j-name")||{}).value||"").trim().slice(0,40),p=((document.getElementById("j-pass")||{}).value||"").trim();
+  if(!n||!p){toast("Enter your name and the passcode.");return}
+  pass=p;
+  try{await api({action:"all"});myName=n;LS("tt_pass",p);LS("tt_name",n);start();render()}
+  catch(e){pass="";toast(e&&e.code==="bad_passcode"?"That passcode was not accepted.":"Could not reach the shared sheet. Check the web app address and try again.")}
+}
+function boot(){
+  render();
+  if(joined())start();
+}
+
+/* ---------- helpers ---------- */
+const tickSvg=s=>s==="Done"?'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="11" fill="var(--good)"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="var(--bg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+ :s==="In progress"?'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="none" stroke="var(--warn)" stroke-width="2"/><path d="M12 2a10 10 0 0 1 0 20z" fill="var(--warn)"/></svg>'
+ :'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="none" stroke="var(--muted)" stroke-width="2"/></svg>';
+const who=r=>{const n=r&&r.by?(names[r.by]||""):"";return n?esc(n):""};
+const dis=()=>canWrite?"":" disabled";
+function costs(){
+  const c=cfg(),total=c.elderly+c.adults+c.teens+c.kids+c.toddlers,vans=Math.max(1,Math.ceil(total/c.perVan));
+  const vrows=VANS.map(v=>({d:addDays(START,v[0]),p:v[1],ty:v[2],rate:v[2]==="Full day"?c.fullDay:c.transfer,cost:vans*(v[2]==="Full day"?c.fullDay:c.transfer)}));
+  const van=vrows.reduce((a,b)=>a+b.cost,0);
+  const full=c.elderly+c.adults+c.teens,hsr=full*c.hsrFare+c.kids*c.hsrFare*.5;
+  const tour=Math.max(0,+c.tour||0);
+  const tot=van+hsr+tour;
+  return{c,total,vans,vrows,van,hsr,tour,tot,sgd:tot/c.fx,pp:tot/c.fx/total,full};
+}
+function pdue(t){return addDays(START,-t.before)}
+function pstatus(t){return (S.pretrip[t.id]||{}).status||"Not started"}
+function pflag(t){if(pstatus(t)==="Done")return"";const d=dayDiff(pdue(t),today());return d<0?"bad":d<=7?"warn":""}
+function dayCard(i,full){
+  const d=DY(i),dt=addDays(START,i),k=dkey(d),rec=S.days["d"+i]||{},st=rec.status||"Planned";
+  const part=(l,v)=>v?`<div class="part"><b>${l}</b><span>${esc(v)}</span></div>`:"";
+  let h=`<article class="daycard ${k==="khh"?"kh":k==="tpe"?"tp":"tv"}"><header><div><div class="eyebrow">${fmt(dt,{weekday:"short",day:"numeric",month:"short"})} · ${esc(d.c)}</div><h3>${esc(d.h)}</h3></div><span class="chip ${st==="Done"?"good":st==="Booked"?"tpe":""}">${st}</span></header>`;
+  h+=part("Morning",d.m)+part("Afternoon",d.a)+part("Evening",d.e);
+  if(full){
+    h+=part("Transport",d.t)+part("Stay",d.s)+part("Halal & prayer",d.x);
+    h+=`<div class="grid2"><label class="f">Status<select id="st-${i}" data-day="${i}" data-f="status"${dis()}>${STATUSES.map(s=>`<option${s===st?" selected":""}>${s}</option>`).join("")}</select></label></div>`;
+    h+=`<label class="f">Family notes for this day<textarea id="note-${i}" data-day="${i}" data-f="note" placeholder="e.g. Aunty prefers a short walk here"${dis()}>${esc(rec.note||"")}</textarea></label>`;
+    if(rec.note&&who(rec))h+=`<div class="small muted">Last note by ${who(rec)}</div>`;
+    h+=`<button class="btn ghost" data-a="editday" data-i="${i}"${dis()}>Edit this day</button>`;
+  }
+  return h+"</article>";
+}
+
+/* ---------- editing and ideas ---------- */
+let editing=null,pick={},ideaDraft="";
+const FIELDS=["c","k","h","m","a","e","t","s","x"];
+const REG=[["khh","Kaohsiung area (orange)"],["tpe","Taipei area (blue)"],["trv","Travel or other (purple)"]];
+function editForm(i){
+  const d=DY(i),dt=addDays(START,i),k=dkey(d);
+  const f=(id,l,v,ta)=>ta?`<label class="f">${l}<textarea id="ed-${id}" maxlength="600">${esc(v||"")}</textarea></label>`:`<label class="f">${l}<input type="text" id="ed-${id}" maxlength="200" value="${esc(v||"")}"></label>`;
+  return `<article class="daycard ${k==="khh"?"kh":k==="tpe"?"tp":"tv"}"><div class="eyebrow">Editing ${fmt(dt,{weekday:"long",day:"numeric",month:"long"})}</div>
+   ${f("c","Where (city or area)",d.c)}
+   <label class="f">Colour group<select id="ed-k">${REG.map(r=>`<option value="${r[0]}"${r[0]===k?" selected":""}>${r[1]}</option>`).join("")}</select></label>
+   ${f("h","Title",d.h)}${f("m","Morning",d.m,1)}${f("a","Afternoon",d.a,1)}${f("e","Evening",d.e,1)}${f("t","Transport",d.t)}${f("s","Stay",d.s)}${f("x","Halal and prayer notes",d.x,1)}
+   <div class="row"><button class="btn" data-a="saveday" data-i="${i}"${dis()}>Save changes</button><button class="btn ghost" data-a="canceledit">Cancel</button><button class="btn ghost" data-a="resetday" data-i="${i}"${dis()}>Reset to original</button></div>
+   <p class="small muted">Saved for everyone. The date stays fixed because the flights are fixed. After changing a destination, check the van plan on the Rides tab.</p></article>`;
+}
+const IDEA_SOURCE="https://www.havehalalwilltravel.com/muslim-friendly-bubble-tea-guide-in-taiwan";
+const IDEAS_SEED=[
+ {id:"s1",n:"Mr. Wish bubble tea (Songshan, Taipei)",t:"Per the guide: natural cane sugar, fresh milk, no added colouring. Not halal-certified. Ask staff about every topping."},
+ {id:"s2",n:"Jen Ju Dan bubble tea (Zhongzheng, Taipei)",t:"In the Muslim-friendly guide, but not halal-certified. Ask staff."},
+ {id:"s3",n:"Xiao Zhu Zhu bubble tea (Xitun, Taichung)",t:"Taichung is on your 17–18 Dec route. Not halal-certified. Check toppings with staff."},
+ {id:"s4",n:"Cha Yi Fu Xing French milk tea (Sanmin, Kaohsiung)",t:"Toppings include herbal jellies, Jaro balls and red beans. Not halal-certified. Check with staff."}
+];
+function allIdeas(){
+  const I=S.ideas||{},gone=id=>!!(I[id]&&I[id].gone);
+  const mine=Object.keys(I).filter(id=>id[0]==="i"&&!I[id].gone).sort().map(id=>({id,n:I[id].n||"",t:I[id].t||"",by:I[id].by}));
+  return IDEAS_SEED.filter(x=>!gone(x.id)).concat(mine);
+}
+function ideasSection(){
+  const list=allIdeas();
+  const dayOpts=sel=>DAYS.map((_,j)=>`<option value="${j}"${j===sel?" selected":""}>${fmt(addDays(START,j),{day:"numeric",month:"short"})} · ${esc(DY(j).h)}</option>`).join("");
+  const partOpts=sel=>[["m","Morning"],["a","Afternoon"],["e","Evening"]].map(p=>`<option value="${p[0]}"${p[0]===sel?" selected":""}>${p[1]}</option>`).join("");
+  return `<section class="section" id="ideas"><div><h2>Ideas and places to add</h2><p class="small muted">Anyone can add a place. Choose a day and press Add to day to put it into the plan. The bubble tea ideas come from the <a href="${IDEA_SOURCE}" rel="noopener">Have Halal Will Travel guide</a>. None of those shops is halal-certified, so ask staff about every topping and decide for yourselves.</p></div>
+  <div class="card" style="padding-block:4px">${list.length?list.map(x=>{const pk=pick[x.id]||{day:0,part:"a"};return `<div class="item"><div class="body"><b>${esc(x.n)}</b>${x.t?`<span class="small muted">${esc(x.t)}</span>`:""}${who(x)?`<span class="small muted">Added by ${who(x)}</span>`:""}<div class="grid2"><label class="f">Day<select id="pd-${x.id}" data-pick="${x.id}" data-pf="day">${dayOpts(pk.day)}</select></label><label class="f">When<select id="pp-${x.id}" data-pick="${x.id}" data-pf="part">${partOpts(pk.part)}</select></label></div><div class="row"><button class="btn" data-a="idea2day" data-id="${x.id}"${dis()}>Add to day</button><button class="btn ghost" data-a="ideagone" data-id="${x.id}"${dis()}>Remove</button></div></div></div>`}).join(""):'<p class="muted" style="padding:12px 0">No ideas yet. Add one below.</p>'}</div>
+  <div class="card"><label class="f">Add a place or idea<input type="text" id="idea-n" maxlength="160" value="${esc(ideaDraft)}" placeholder="Type a place name"${dis()}></label><button class="btn" data-a="newidea"${dis()}>Add idea</button></div></section>`;
+}
+
+/* ---------- views ---------- */
+function vHome(){
+  const t=today(),c=costs(),n=dayDiff(START,t),last=dayDiff(t,START);
+  const done=TASKS.filter(x=>pstatus(x)==="Done").length,pct=Math.round(done/TASKS.length*100);
+  const over=TASKS.filter(x=>pflag(x)==="bad").length,soon=TASKS.filter(x=>pflag(x)==="warn").length;
+  if(homeDay==null)homeDay=Math.max(0,Math.min(10,last));
+  const count=n>0?`<b class="num">${n}</b><span>days to go</span>`:last<=10?`<b class="num">${last+1}</b><span>of 11 days, ${esc(DY(last).h)}</span>`:`<b>Done</b><span>Trip finished</span>`;
+  let h=`<section class="section"><div class="count">${count}</div>
+   <div class="route" role="img" aria-label="Route: 3 nights Kaohsiung, 2 nights on the Alishan and Taichung tour, 4 nights Taipei, flight just after midnight"><div class="khh">Kaohsiung · 3</div><div class="trv">Tour · 2</div><div class="tpe">Taipei · 4</div><div class="fly">Fly 00:15</div></div>
+   <div class="spread small muted"><span>Land Taoyuan, Sun 13 Dec, 05:35</span><span>${c.total} travellers</span></div></section>`;
+  h+=`<section class="card"><div class="spread"><h2>Before we go</h2><a href="#todo" class="small">Open list</a></div>
+   <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div>
+   <div class="row"><span class="num"><b>${done}</b> of ${TASKS.length} done</span>${over?`<span class="chip bad">${over} overdue</span>`:""}${soon?`<span class="chip warn">${soon} due this week</span>`:""}</div></section>`;
+  h+=`<section class="section"><div class="spread"><h2>Day by day</h2><div class="row"><button class="btn ghost" data-a="hprev" aria-label="Previous day"${homeDay<=0?" disabled":""}>Prev</button><button class="btn ghost" data-a="hnext" aria-label="Next day"${homeDay>=10?" disabled":""}>Next</button></div></div>${dayCard(homeDay,false)}</section>`;
+  h+=`<section class="card"><div class="spread"><h2>Transport budget</h2><a href="#rides" class="small">Details</a></div>
+   <div class="row" style="gap:24px"><div><div class="eyebrow">Total</div><b class="num" style="font-size:22px">NT$${money(c.tot)}</b><div class="small muted num">about S$${money(c.sgd)}</div></div><div><div class="eyebrow">Per person</div><b class="num" style="font-size:22px">S$${money(c.pp)}</b></div></div>
+   <p class="small muted">Vans, HSR and the paid tour only.${c.tour?"":" The tour price is not entered yet (Rides tab)."} Meals, tickets, hotels and flights are not included.</p></section>`;
+  const bk=S.bookings.main||{};
+  h+=`<section class="card"><h2>Key bookings</h2>${BOOKS.map(b=>`<label class="f">${b[1]}<input type="text" id="bk-${b[0]}" data-bk="${b[0]}" value="${esc(bk[b[0]]||"")}" placeholder="${esc(b[2])}"${dis()}></label>`).join("")}</section>`;
+  return h;
+}
+function vCalendar(){
+  const t=today(),first=new Date(2026,10,30);
+  if(selDay==null)selDay=Math.max(0,Math.min(10,dayDiff(t,START)));
+  let cells="";
+  for(const w of ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"])cells+=`<div class="w">${w}</div>`;
+  for(let i=0;i<35;i++){
+    const d=addDays(first,i),off=dayDiff(d,START),inTrip=off>=0&&off<=10,dec=d.getMonth()===11;
+    const cls=[inTrip?dkey(DY(off)):"",!dec?"out":"",dayDiff(d,t)===0?"today":"",inTrip&&off===selDay?"sel":""].join(" ");
+    cells+=inTrip?`<button class="${cls}" data-a="pick" data-i="${off}" aria-label="${fmt(d,{weekday:"long",day:"numeric",month:"long"})}, ${esc(DY(off).h)}"><b>${d.getDate()}</b><small>${tag[dkey(DY(off))]}</small></button>`
+      :`<button class="${cls}" tabindex="-1" aria-hidden="true" style="cursor:default"><b>${d.getDate()}</b></button>`;
+  }
+  return `<section class="section"><div><div class="eyebrow">2026</div><h2>December</h2></div>
+   <div class="legend"><span class="chip khh">Kaohsiung</span><span class="chip tpe">Taipei</span><span class="chip trv">Tour, travel and flight</span></div>
+   <div class="cal">${cells}</div></section>
+   <section class="section"><h2>Selected day</h2>${dayCard(selDay,false)}<button class="btn" data-a="openday" data-i="${selDay}">Open full day and notes</button></section>`;
+}
+function vSchedule(){
+  let h=`<section class="section"><div><div class="eyebrow">13–23 Dec 2026</div><h2>Every day, in one place</h2></div></section>`;
+  DAYS.forEach((_,i)=>{
+    const d=DY(i),dt=addDays(START,i),k=dkey(d),rec=S.days["d"+i]||{},isOpen=open.has(i);
+    h+=`<div class="section"><button class="dayhead ${k==="khh"?"kh":k==="tpe"?"tp":"tv"}" data-a="toggle" data-i="${i}" aria-expanded="${isOpen}"><div class="d">${dt.getDate()}<small>${fmt(dt,{weekday:"short"})}</small></div><div class="t"><b>${esc(d.h)}</b><span>${esc(d.c)}${rec.status&&rec.status!=="Planned"?" · "+rec.status:""}</span></div></button>${isOpen?(editing===i?editForm(i):dayCard(i,true)):""}</div>`;
+  });
+  h+=ideasSection();
+  return h;
+}
+function vTodo(){
+  let h=`<section class="section"><div class="seg" role="group" aria-label="List"><button data-a="tmode" data-m="before" aria-pressed="${tMode==="before"}">Before the trip</button><button data-a="tmode" data-m="during" aria-pressed="${tMode==="during"}">During the trip</button></div></section>`;
+  if(tMode==="before"){
+    const list=TASKS.filter(t=>pFilter==="all"||(pFilter==="open"?pstatus(t)!=="Done":pstatus(t)==="Done")).sort((a,b)=>b.before-a.before);
+    h+=`<section class="section"><div class="seg" role="group" aria-label="Filter">${[["all","All"],["open","Open"],["done","Done"]].map(f=>`<button data-a="pfilter" data-f="${f[0]}" aria-pressed="${pFilter===f[0]}">${f[1]}</button>`).join("")}</div>
+     <div class="card" style="padding-block:4px">${list.length?list.map(t=>{const s=pstatus(t),r=S.pretrip[t.id],fl=pflag(t);
+       return `<div class="item${s==="Done"?" done":""}"><button class="tick" data-a="cycle" data-id="${t.id}" aria-label="${esc(t.t)}: ${s}. Tap to change"${dis()}>${tickSvg(s)}</button><div class="body"><span class="tx">${esc(t.t)}</span><div class="meta"><span>Due ${fmt(pdue(t),{day:"numeric",month:"short"})}</span><span class="chip">${t.cat}</span>${fl?`<span class="chip ${fl}">${fl==="bad"?"Overdue":"Due soon"}</span>`:""}${s==="In progress"?'<span class="chip warn">In progress</span>':""}${who(r)?`<span>${s==="Done"?"Done":"Updated"} by ${who(r)}</span>`:""}</div><span class="small muted">${esc(t.note)}</span></div></div>`}).join(""):'<p class="muted" style="padding:12px 0">Nothing here.</p>'}</div></section>`;
+  }else{
+    const done=DURING.filter(x=>S.during[x.id]&&S.during[x.id].done).length;
+    h+=`<section class="section"><div class="spread"><h2>On the road</h2><span class="muted num">${done} of ${DURING.length} done</span></div>`;
+    for(let o=0;o<10;o++){
+      const its=DURING.filter(x=>x.day===o),dn=its.filter(x=>S.during[x.id]&&S.during[x.id].done).length;
+      h+=`<div class="card" style="gap:4px"><div class="spread"><b>${fmt(addDays(START,o),{weekday:"short",day:"numeric",month:"short"})} · ${esc(DY(o).h)}</b><span class="small muted num">${dn}/${its.length}</span></div>`;
+      h+=its.map(x=>{const r=S.during[x.id],dn2=!!(r&&r.done);return `<div class="item${dn2?" done":""}"><button class="tick" data-a="dtick" data-id="${x.id}" aria-label="${esc(x.t)}: ${dn2?"done":"not done"}"${dis()}>${tickSvg(dn2?"Done":"")}</button><div class="body"><span class="tx">${esc(x.t)}</span><div class="meta"><span>${x.w}</span>${dn2&&who(r)?`<span>by ${who(r)}</span>`:""}</div></div></div>`}).join("")+"</div>";
+    }
+    h+="</section>";
+  }
+  return h;
+}
+function vRides(){
+  const c=costs(),k=c.c;
+  const num=(id,l,v,step)=>`<label class="f">${l}<input type="number" inputmode="decimal" id="cfg-${id}" data-cfg="${id}" value="${v}" min="0" step="${step||1}"${dis()}></label>`;
+  let h=`<section class="section"><div><div class="eyebrow">For ${c.total} people</div><h2>Rental and transport</h2></div>
+   <div class="opt"><span class="v yes">Booked as one tour</span><b>Paid tour, 16–18 Dec</b><span class="small">Kaohsiung to Alishan, Taichung, then Taipei in a single booking. Ask about the vehicle size for 14, halal meals, prayer breaks, pickup at Howard Plaza, drop-off at Boutech, and whether the two hotel nights are included. Type the quote under Estimate settings so the total is right.</span></div>
+   <div class="opt"><span class="v yes">Recommended</span><b>Two chartered 9-seater vans with a driver</b><span class="small">Use for 19 Dec (Palace Museum and Shilin), 20 Dec (Yehliu and Keelung) and the airport transfers. In Kaohsiung, Cijin, the mosque and Suzuka work by MRT, ferry or taxi, and Pokémon Center and Taipei 101 are an easy MRT ride. Each van carries about 7 people and about 6 large bags. Estimate: NT$${money(c.van)} (about S$${money(c.van/k.fx)}).</span></div>
+   <div class="opt"><span class="v yes">Recommended</span><b>HSR on 13 Dec</b><span class="small">Taoyuan to Zuoying at 10:34. Reserve all 14 seats together. Under 6 free without a seat, 6–11 half price. Estimate: NT$${money(c.hsr)}. Check the exact Taoyuan–Zuoying fare when you book; the default fare here is a rough figure.</span></div>
+   <div class="opt"><span class="v no">Not recommended</span><b>Self-drive rental</b><span class="small">Needs a Singapore licence plus an International Driving Permit from an official issuer. Taiwan drives on the right, with left-hand-drive cars. About NT$3,000 per day per car, and 14 people need 3 cars. Parking is hard and it is stressful with 8 children.</span></div>
+   <div class="opt"><b>Taxis and ride-hailing</b><span class="small">Fine for short hops. 3 taxis per trip, hard to keep the group together, expensive for day trips.</span></div></section>`;
+  h+=`<section class="card"><h2>Estimate settings</h2><p class="small muted">Edit any number. Everyone sees the same figures.</p><div class="grid2">
+   ${num("tour","Paid tour, whole group (NT$)",k.tour,500)}${num("elderly","Elderly",k.elderly)}${num("adults","Adults",k.adults)}${num("teens","Teens 12–16",k.teens)}${num("kids","Children 6–11",k.kids)}${num("toddlers","Under 6",k.toddlers)}
+   ${num("perVan","Passengers per van",k.perVan)}${num("fullDay","Full-day van (NT$)",k.fullDay,100)}${num("transfer","Transfer per van (NT$)",k.transfer,100)}${num("fx","NT$ per S$1",k.fx,.1)}${num("hsrFare","HSR adult fare (NT$)",k.hsrFare,10)}</div>
+   <p class="small muted">Children's age split, the transfer price and the exchange rate are assumptions. Get real quotes before booking.</p></section>`;
+  h+=`<section class="card"><h2>Van plan (${c.vans} vans)</h2><div class="tbl"><table><thead><tr><th>Date</th><th>Purpose</th><th>Type</th><th class="r">NT$</th></tr></thead><tbody>
+   ${c.vrows.map(r=>`<tr><td>${fmt(r.d,{day:"numeric",month:"short"})}</td><td>${esc(r.p)}</td><td>${r.ty}</td><td class="r">${money(r.cost)}</td></tr>`).join("")}
+   <tr class="total"><td colspan="3">Vans total</td><td class="r">${money(c.van)}</td></tr></tbody></table></div></section>`;
+  h+=`<section class="card"><h2>Budget summary</h2><div class="tbl"><table><tbody>
+   <tr><td>Vans</td><td class="r">NT$${money(c.van)}</td></tr><tr><td>HSR (13 Dec)</td><td class="r">NT$${money(c.hsr)}</td></tr><tr><td>Paid tour (16–18 Dec)</td><td class="r">${c.tour?"NT$"+money(c.tour):"not entered"}</td></tr>
+   <tr class="total"><td>Total</td><td class="r">NT$${money(c.tot)}</td></tr><tr><td>Total in Singapore dollars</td><td class="r">S$${money(c.sgd)}</td></tr><tr><td>Per person</td><td class="r">S$${money(c.pp)}</td></tr></tbody></table></div></section>`;
+  h+=`<section class="card"><h2>Booking tips</h2><ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+   <li>Two vans carry about 12 large bags. On arrival and departure days, plan 1 bag per person or add a third vehicle for luggage.</li>
+   <li>Ask for child seats for the 2-year-old: about NT$200 per day each, maximum 2 per van.</li>
+   <li>Ask each company about driver language, hours included, overtime rate (about NT$500–900 per hour), and any driver accommodation fee on days finishing after 19:00.</li>
+   <li>Get 2–3 quotes (Klook, KKday, local charter companies) and update the numbers above.</li></ul></section>`;
+  h+=`<section class="section small muted"><b>Sources (checked 31 Oct 2026; verify before booking)</b>
+   <a href="https://www.northwest.com.tw/travel/index_en.php?travel=885" rel="noopener">Van charter rates</a>
+   <a href="https://www.kkday.com/en/product/268651" rel="noopener">Child seat and overtime terms</a>
+   <a href="https://www.tripool.app/en/articles/Chauffeured-Car-Price-List-en" rel="noopener">9-seater capacity and luggage</a>
+   <a href="https://www.goodcars.tw/en/blog/article/general/singaporean-taiwan-car-rental-guide" rel="noopener">Singapore licence and IDP</a>
+   <a href="https://www.expatfocus.com/taiwan/guide/taiwan-car-rental" rel="noopener">Car rental requirements</a></section>`;
+  return h;
+}
+function vGate(){
+  if(!API_OK)return `<section class="card"><h2>Almost ready</h2><p>This page is not connected to your Google Sheet yet. Open <b>index.html</b> in a text editor, find the line <b>const API_URL=</b> and paste your Web app address between the quotes. The address starts with <b>https://script.google.com/macros/s/</b>. Then upload the file again.</p></section>`;
+  return `<section class="card"><h2>Join the family plan</h2><p class="small muted">Enter your name, so the family can see who ticked what, and the family passcode. They are saved on this phone only.</p>
+   <label class="f">Your name<input type="text" id="j-name" maxlength="40" autocomplete="given-name" value="${esc(myName)}"></label>
+   <label class="f">Family passcode<input type="password" id="j-pass" autocomplete="off"></label>
+   <button class="btn" data-a="join">Join</button></section>`;
+}
+
+const VIEWS={home:vHome,calendar:vCalendar,schedule:vSchedule,todo:vTodo,rides:vRides};
+function render(){
+  const v=(location.hash||"#home").slice(1);
+  view=VIEWS[v]?v:"home";
+  const ok=joined();
+  document.getElementById("nav").hidden=!ok;
+  document.querySelectorAll("nav.tabs a").forEach(a=>{if(a.dataset.v===view)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  const sy=!ok?"":sync==="live"?'<span class="sync live"><i></i>Shared and up to date</span>':sync==="off"?'<span class="sync off"><i></i>Not reachable</span>':'<span class="sync"><i></i>Connecting…</span>';
+  let top=`<header class="top"><div class="eyebrow">13–22 Dec 2026 · Kaohsiung, Alishan, Taichung, Taipei</div><h1>Taiwan Family Trip</h1><div class="row">${sy}${ok?`<span class="small muted">${esc(myName)}</span><button class="btn ghost tiny" data-a="signout">Sign out</button>`:""}</div></header>`;
+  if(ok&&sync==="off")top+='<div class="banner">The shared sheet is not reachable, so changes may not be saved or shown to others. Check your connection; the page keeps trying.</div>';
+  app.innerHTML=top+(ok?VIEWS[view]():vGate());
+}
+window.addEventListener("hashchange",()=>{window.scrollTo(0,0);render()});
+
+/* ---------- events ---------- */
+app.addEventListener("click",e=>{
+  const b=e.target.closest("[data-a]");if(!b)return;
+  const a=b.dataset.a,i=+b.dataset.i;
+  if(a==="join"){doJoin();return}
+  if(a==="signout"){signOut();return}
+  if(a==="hprev"){homeDay=Math.max(0,homeDay-1);render()}
+  else if(a==="hnext"){homeDay=Math.min(10,homeDay+1);render()}
+  else if(a==="pick"){selDay=i;render()}
+  else if(a==="editday"&&canWrite){editing=i;open.add(i);render()}
+  else if(a==="canceledit"){editing=null;render()}
+  else if(a==="saveday"&&canWrite){const o={};FIELDS.forEach(f=>{const el=document.getElementById("ed-"+f);o[f]=((el&&el.value)||"").trim().slice(0,600)});if(!o.h){toast("Add a title for the day.");return}o.by=uid||null;save("plan","d"+i,o);editing=null;render();toast("Day saved for everyone.")}
+  else if(a==="resetday"&&canWrite){save("plan","d"+i,{});editing=null;render();toast("Day set back to the original plan.")}
+  else if(a==="newidea"&&canWrite){const el=document.getElementById("idea-n"),n=((el&&el.value)||"").trim().slice(0,160);if(!n){toast("Type a place first.");return}const id="i"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);ideaDraft="";save("ideas",id,{n:n,t:"",by:uid||null})}
+  else if(a==="ideagone"&&canWrite){const x=allIdeas().find(z=>z.id===b.dataset.id);if(x)save("ideas",x.id,{gone:true,n:x.n,t:x.t||"",by:uid||null})}
+  else if(a==="idea2day"&&canWrite){
+    const x=allIdeas().find(z=>z.id===b.dataset.id);if(!x)return;
+    const pk=pick[x.id]||{day:0,part:"a"},j=pk.day,cur=DY(j),f=pk.part;
+    const o=Object.assign({},(S.plan||{})["d"+j]||{});
+    o[f]=((cur[f]||"")+(cur[f]?" ":"")+"Also: "+x.n+".").slice(0,600);o.by=uid||null;
+    save("plan","d"+j,o);save("ideas",x.id,{gone:true,n:x.n,t:x.t||"",by:uid||null});
+    toast("Added to "+fmt(addDays(START,j),{day:"numeric",month:"short"})+". Use Edit this day to adjust it.");
+  }
+  else if(a==="openday"){open.add(i);location.hash="#schedule";setTimeout(()=>{const el=document.querySelector('[data-a="toggle"][data-i="'+i+'"]');if(el)el.scrollIntoView({block:"start"})},60)}
+  else if(a==="toggle"){open.has(i)?open.delete(i):open.add(i);render()}
+  else if(a==="tmode"){tMode=b.dataset.m;render()}
+  else if(a==="pfilter"){pFilter=b.dataset.f;render()}
+  else if(a==="cycle"&&canWrite){const t=TASKS.find(x=>x.id===b.dataset.id),s=PSTAT[(PSTAT.indexOf(pstatus(t))+1)%3];save("pretrip",t.id,{status:s,by:uid||null})}
+  else if(a==="dtick"&&canWrite){const id=b.dataset.id,r=S.during[id];save("during",id,{done:!(r&&r.done),by:uid||null})}
+});
+app.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.dataset.bk){const m=Object.assign({},S.bookings.main||{});m[el.dataset.bk]=el.value.trim();save("bookings","main",m)}
+  else if(el.dataset.cfg){const v=parseFloat(el.value);if(isFinite(v)&&v>=0){const m=Object.assign({},S.settings.main||{});m[el.dataset.cfg]=v;save("settings","main",m)}}
+  else if(el.dataset.pick){const id=el.dataset.pick,pk=Object.assign({day:0,part:"a"},pick[id]||{});if(el.dataset.pf==="day")pk.day=+el.value;else pk.part=el.value;pick[id]=pk}
+  else if(el.dataset.day!=null){const k="d"+el.dataset.day,r=Object.assign({},S.days[k]||{});r[el.dataset.f]=el.value;r.by=uid||null;save("days",k,r)}
+});
+app.addEventListener("input",e=>{if(e.target&&e.target.id==="idea-n")ideaDraft=e.target.value});
+app.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target&&e.target.id==="j-pass")doJoin()});
+boot();
+})();
+</script>
+</body>
+</html>
